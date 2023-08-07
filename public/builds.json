@@ -1,4 +1,4 @@
 [
-  { "image_tag": "benchpress:123", "revision": "abc" },
-  { "image_tag": "benchpress:123", "revision": "abc" }
+  { "image_tag": "benchpress:1", "revision": "abc" },
+  { "image_tag": "benchpress:2", "revision": "abc" }
 ]
