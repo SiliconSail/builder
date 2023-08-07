@@ -42,7 +42,10 @@ class EnviroblyBuilder::Cli::Builds < Thor
     end
 
     def run_build(build)
+      # TODO: 1. Touch log file
+      # TODO: 2. Launch container with aws --log-opt tailing the log file, detached
+      # TODO: 3. Launch buildx build
+
       `echo "build: #{build["image_tag"]}" > #{options.log}`
-      # TODO:
     end
 end
