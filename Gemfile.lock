@@ -1,0 +1,39 @@
+PATH
+  remote: .
+  specs:
+    envirobly-builder (0.0.1)
+      httparty
+      thor
+      zeitwerk
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    debug (1.8.0)
+      irb (>= 1.5.0)
+      reline (>= 0.3.1)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
+    io-console (0.6.0)
+    irb (1.7.1)
+      reline (>= 0.3.0)
+    mini_mime (1.1.2)
+    multi_xml (0.6.0)
+    reline (0.3.5)
+      io-console (~> 0.5)
+    thor (1.2.2)
+    zeitwerk (2.6.8)
+
+PLATFORMS
+  aarch64-linux
+  arm64-darwin-22
+  x86_64-darwin
+  x86_64-linux
+
+DEPENDENCIES
+  debug
+  envirobly-builder!
+
+BUNDLED WITH
+   2.4.12

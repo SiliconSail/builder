@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+
+require "webrick"
+
+public_path = File.join File.expand_path(File.dirname(__FILE__)), "..", "public"
+puts "Serving sample builds.json file from #{public_path} at http://localhost:1337/builds.json"
+server = WEBrick::HTTPServer.new(Port: 1337, DocumentRoot: public_path)
+server.start

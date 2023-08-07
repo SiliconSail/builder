@@ -1,0 +1,4 @@
+[
+  { "image_tag": "benchpress:123", "revision": "abc" },
+  { "image_tag": "benchpress:123", "revision": "abc" }
+]
