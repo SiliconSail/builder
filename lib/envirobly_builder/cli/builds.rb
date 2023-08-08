@@ -1,5 +1,5 @@
 require "httparty"
-# require "debug"
+require "debug"
 
 class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
@@ -24,8 +24,9 @@ class EnviroblyBuilder::Cli::Builds < Thor
       end
 
       # TODO puts as an interval option
-      sleep 100 if has_work
+      sleep 5 if has_work
       puts "Sleeping..."
+      debugger
     end
 
     puts "Work done. Exiting."
