@@ -23,7 +23,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
         !THREAD_DONE_STATUSES.include?(thread.status)
       end
 
-      # TODO puts as an interval option
+      # TODO sleep as an interval option
       sleep 5 if has_work
       puts "Sleeping..."
       debugger
