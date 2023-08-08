@@ -24,7 +24,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
       end
 
       # TODO puts as an interval option
-      sleep 5 if has_work
+      sleep 600 if has_work
       puts "Sleeping..."
       debugger
     end
@@ -75,6 +75,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
         "--detach",
         "--rm",
         "-v", "#{log_path(image_tag)}:/build.log",
+        # TODO: Make this switchable by argument
         # "--log-opt", "awslogs-stream=Builder/#{image_tag}/build",
         "alpine",
         "tail -f /build.log"
@@ -98,13 +99,23 @@ class EnviroblyBuilder::Cli::Builds < Thor
       `#{cmd}`
     end
 
-    def run_buildx_build_cmd(build)
-      [
+    def run_buildx_build(build)
+      build_parts = [
+        "time",
         "docker",
         "buildx",
         "build",
-        build_context_path(image_tag)
+        "--progress=plain",
+        "-t", "#{build["repository_url"]}:#{build["image_tag"]}",
+        "-f", File.join(build_context_path(build["image_tag"]), build["dockerfile_path"]),
+        # TODO: Add --push switchable by argument
+        File.join(build_context_path(build["image_tag"]), build["build_context"])
       ]
+      redirect_logs_parts = [
+        "(#{build_parts.join " "})",
+        "2>&1", "|", "tee", "-a", log_path(build["image_tag"])
+      ]
+      run_cmd_parts redirect_logs_parts
     end
 
     def run_build(build)
@@ -114,8 +125,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
 
       fetch_and_export_revision build
 
-      # TODO: 3. Launch buildx build
-      `echo "build: #{build["image_tag"]}" > #{log_path(build["image_tag"])}`
+      run_buildx_build build
 
       # TODO: Cleanup
     end
