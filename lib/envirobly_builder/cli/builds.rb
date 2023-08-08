@@ -5,7 +5,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
 
   desc "pull", "Pull pending builds from provided URL authenticating with a HTTP bearer token and start them"
-  method_options url: :string, token: :string, log: :string
+  method_options url: :string, token: :string
   def pull
     build_threads = []
     has_work = true
@@ -24,7 +24,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
       end
 
       # TODO puts as an interval option
-      sleep 5 if has_work
+      sleep 100 if has_work
       puts "Sleeping..."
     end
 
@@ -37,15 +37,85 @@ class EnviroblyBuilder::Cli::Builds < Thor
       { "Authorization" => options.token }
     end
 
-    def log_path
+    def parent_dir(image_tag)
+      "/tmp/build-#{image_tag}"
+    end
 
+    def log_path(image_tag)
+      File.join parent_dir(image_tag), "build.log"
+    end
+
+    def build_context_path(image_tag)
+      File.join parent_dir(image_tag), "context"
+    end
+
+    def init_dirs_and_files(image_tag)
+      build_context_path(image_tag).tap do |path|
+        FileUtils.mkdir_p path
+        puts "Created #{path}"
+      end
+
+      log_path(image_tag).tap do |path|
+        FileUtils.touch path
+        puts "Touched #{path}"
+      end
+    end
+
+    def git_path
+      File.join ENV["HOME"], "app.git"
+    end
+
+    def run_log_container(image_tag)
+      name = "build-log-#{image_tag}"
+      parts = [
+        "docker",
+        "run",
+        "--name", name,
+        "--detach",
+        "--rm",
+        "-v", "#{log_path(image_tag)}:/build.log",
+        # "--log-opt", "awslogs-stream=Builder/#{image_tag}/build",
+        "alpine",
+        "tail -f /build.log"
+      ]
+      run_cmd_parts parts
+    end
+
+    def fetch_and_export_revision(build)
+      parts = [
+        "cd", git_path, "&&",
+        "git", "fetch", "origin", build["revision"], "&&",
+        "git", "archive", build["revision"], "|",
+        "tar", "-x", "-C", build_context_path(build["image_tag"])
+      ]
+      run_cmd_parts parts
+    end
+
+    def run_cmd_parts(parts)
+      cmd = parts.join " "
+      puts cmd
+      `#{cmd}`
+    end
+
+    def run_buildx_build_cmd(build)
+      [
+        "docker",
+        "buildx",
+        "build",
+        build_context_path(image_tag)
+      ]
     end
 
     def run_build(build)
-      # TODO: 1. Touch log file
-      # TODO: 2. Launch container with aws --log-opt tailing the log file, detached
-      # TODO: 3. Launch buildx build
+      init_dirs_and_files build["image_tag"]
 
-      `echo "build: #{build["image_tag"]}" > #{options.log}`
+      run_log_container build["image_tag"]
+
+      fetch_and_export_revision build
+
+      # TODO: 3. Launch buildx build
+      `echo "build: #{build["image_tag"]}" > #{log_path(build["image_tag"])}`
+
+      # TODO: Cleanup
     end
 end

@@ -1,4 +1,16 @@
 [
-  { "image_tag": "benchpress:1", "revision": "abc" },
-  { "image_tag": "benchpress:2", "revision": "abc" }
+  {
+    "repository_url": "406367475671.dkr.ecr.eu-central-1.amazonaws.com/siliconsail-80bb8930a0",
+    "image_tag": "e64c50098299fae54d3689a46f9fe892158f3a85",
+    "revision": "e64c50098299fae54d3689a46f9fe892158f3a85",
+    "dockerfile_path": "Dockerfile",
+    "build_context": "."
+  },
+  {
+    "repository_url": "406367475671.dkr.ecr.eu-central-1.amazonaws.com/siliconsail-80bb8930a0",
+    "image_tag": "8374b9010bc053864bf2342f3365b949c5bd45c8",
+    "revision": "8374b9010bc053864bf2342f3365b949c5bd45c8",
+    "dockerfile_path": "Dockerfile",
+    "build_context": "."
+  }
 ]
