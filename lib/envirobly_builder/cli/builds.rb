@@ -1,11 +1,10 @@
 require "httparty"
-require "debug"
 
 class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
 
   desc "pull", "Pull pending builds from provided URL authenticating with a HTTP bearer token and start them"
-  method_options url: :string, token: :string, push: false, awslogs: false
+  method_options url: :string, token: :string, push: false, awslogs: false, debug: false
   def pull
     build_threads = []
     has_work = true
@@ -26,7 +25,11 @@ class EnviroblyBuilder::Cli::Builds < Thor
       # TODO sleep as an interval option
       sleep 5 if has_work
       puts "Sleeping..."
-      debugger
+
+      if options.debug?
+        require "debug"
+        debugger
+      end
     end
 
     puts "Work done. Exiting."
