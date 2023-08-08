@@ -5,7 +5,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
 
   desc "pull", "Pull pending builds from provided URL authenticating with a HTTP bearer token and start them"
-  method_options url: :string, token: :string, push: false
+  method_options url: :string, token: :string, push: false, awslogs: false
   def pull
     build_threads = []
     has_work = true
@@ -75,8 +75,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
         "--detach",
         "--rm",
         "-v", "#{log_path(image_tag)}:/build.log",
-        # TODO: Make this switchable by argument
-        # "--log-opt", "awslogs-stream=Builder/#{image_tag}/build",
+        "--log-opt", "#{options.awslogs? ? "awslogs-stream" : "labels"}=Builder/#{image_tag}/build",
         "alpine",
         "tail -f /build.log"
       ]
