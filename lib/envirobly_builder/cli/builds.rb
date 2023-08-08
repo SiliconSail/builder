@@ -24,7 +24,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
       end
 
       # TODO puts as an interval option
-      sleep 600 if has_work
+      sleep 5 if has_work
       puts "Sleeping..."
       debugger
     end
@@ -106,9 +106,9 @@ class EnviroblyBuilder::Cli::Builds < Thor
         "buildx",
         "build",
         "--progress=plain",
+        "--load", # TODO: Add --push switchable by argument
         "-t", "#{build["repository_url"]}:#{build["image_tag"]}",
         "-f", File.join(build_context_path(build["image_tag"]), build["dockerfile_path"]),
-        # TODO: Add --push switchable by argument
         File.join(build_context_path(build["image_tag"]), build["build_context"])
       ]
       redirect_logs_parts = [
