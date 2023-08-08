@@ -5,7 +5,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
 
   desc "pull", "Pull pending builds from provided URL authenticating with a HTTP bearer token and start them"
-  method_options url: :string, token: :string
+  method_options url: :string, token: :string, push: false
   def pull
     build_threads = []
     has_work = true
@@ -106,7 +106,7 @@ class EnviroblyBuilder::Cli::Builds < Thor
         "buildx",
         "build",
         "--progress=plain",
-        "--load", # TODO: Add --push switchable by argument
+        options.push? ? "--push" : "--load",
         "-t", "#{build["repository_url"]}:#{build["image_tag"]}",
         "-f", File.join(build_context_path(build["image_tag"]), build["dockerfile_path"]),
         File.join(build_context_path(build["image_tag"]), build["build_context"])
