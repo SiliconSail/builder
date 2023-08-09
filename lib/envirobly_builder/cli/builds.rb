@@ -1,4 +1,5 @@
 require "httparty"
+require "open3"
 
 class EnviroblyBuilder::Cli::Builds < Thor
   THREAD_DONE_STATUSES = [nil, false]
@@ -23,8 +24,9 @@ class EnviroblyBuilder::Cli::Builds < Thor
       end
 
       # TODO sleep as an interval option
-      sleep 5 if has_work
-      puts "Sleeping..."
+      interval = 5
+      sleep interval if has_work
+      puts "Waiting #{interval}s"
 
       if options.debug?
         require "debug"
@@ -95,9 +97,17 @@ class EnviroblyBuilder::Cli::Builds < Thor
     end
 
     def run_cmd_parts(parts)
-      cmd = parts.join " "
-      puts cmd
-      `#{cmd}`
+      command = parts.join " "
+      STDOUT.puts command
+
+      stdout, stderr, status = Open3.capture3 command
+
+      if status.to_i > 0
+        STDERR.puts stderr
+        exit 1
+      else
+        STDOUT.puts stdout
+      end
     end
 
     def run_buildx_build(build)
