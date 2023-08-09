@@ -87,9 +87,8 @@ class EnviroblyBuilder::Cli::Builds < Thor
 
     def fetch_and_export_revision(build)
       parts = [
-        "cd", git_path, "&&",
-        "git", "fetch", "origin", build["revision"], "&&",
-        "git", "archive", build["revision"], "|",
+        "git", "--git-dir", git_path, "fetch", "origin", build["revision"], "&&",
+        "git", "--git-dir", git_path, "archive", build["revision"], "|",
         "tar", "-x", "-C", build_context_path(build["image_tag"])
       ]
       run_cmd_parts parts
